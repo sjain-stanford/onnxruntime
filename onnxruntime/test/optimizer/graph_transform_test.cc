@@ -2169,9 +2169,10 @@ TEST_F(GraphTransformationTests, FastGeluWithBiasFusionTest) {
 }
 
 TEST_F(GraphTransformationTests, FastGeluWithBiasFusionRecomputeTest) {
-  auto model_uri = MODEL_FOLDER "fusion/fast_gelu_with_bias.onnx";
+  auto model_uri = MODEL_FOLDER "fusion/bias_gelu_fusion_recompute.onnx";
   std::shared_ptr<Model> p_model;
   auto load_ret = Model::Load(model_uri, p_model, nullptr, *logger_);
+  std::cout << "The error " << load_ret.ErrorMessage() << std::endl;
   ASSERT_TRUE(load_ret.IsOK());
   Graph& graph = p_model->MainGraph();
 
