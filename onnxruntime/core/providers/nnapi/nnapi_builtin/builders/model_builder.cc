@@ -39,11 +39,11 @@ bool IsValidSupportedNodesVec(const std::vector<int>& supported_node_vec, const 
       const auto& node_indices = graph_viewer.GetNodesInTopologicalOrder();
       const auto* node(graph_viewer.GetNode(node_indices[supported_node_vec[0]]));
       const auto& op = node->OpType();
-      // It is not worth it to perform a single Reshape/Dropout/Identity operator
+      // It is not worth it to perform a single Reshape/Flatten/Identity operator
       // which is only copying the data in NNAPI
       // If this is the case, let it fall back
       if (op == "Reshape" ||
-          op == "Dropout" ||
+          op == "Flatten" ||
           op == "Identity") {
         return false;
       }
