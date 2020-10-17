@@ -200,7 +200,15 @@ Status LoadInitializerOrtFormat(const fbs::Tensor& fbs_tensor,
     ORT_RETURN_IF(nullptr == fbs_raw_data, "Missing raw data for initializer. Invalid ORT format model.");
 
     // fbs_raw_data is uint8_t vector, so the size is byte size
-    initializer.set_raw_data(fbs_raw_data->Data(), fbs_raw_data->size());
+    // however, we want to load int64_t types to int64_t data
+    if (initializer.data_type() == TensorProto_DataType_INT64) {
+      const auto num_elements = fbs_raw_data->size() / sizeof(int64_t);
+      const auto cbegin = reinterpret_cast<const int64_t*>(fbs_raw_data->Data());
+      const auto cend = cbegin + num_elements;
+      initializer.mutable_int64_data()->Add(cbegin, cend);
+    } else {
+      initializer.set_raw_data(fbs_raw_data->Data(), fbs_raw_data->size());
+    }
   }
 
   return Status::OK();

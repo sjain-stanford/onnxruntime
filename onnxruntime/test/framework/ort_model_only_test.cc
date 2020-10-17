@@ -308,6 +308,11 @@ TEST(OrtModelOnlyTests, SerializeToOrtFormatMLOps) {
 #endif  // #if !defined(DISABLE_ML_OPS)
 #endif  // #if !defined(ORT_MINIMAL_BUILD)
 
+TEST(OrtModelOnlyTests, SparseInitializerHandling) {
+  const std::basic_string<ORTCHAR_T> ort_file = ORT_TSTR("sparse_initializer_handling.onnx.ort");
+  SaveAndCompareModels("testdata/sparse_initializer_handling.onnx", ort_file);
+}
+
 OrtModelTestInfo GetTestInfoForLoadOrtFormatModel() {
   OrtModelTestInfo test_info;
   test_info.model_filename = ORT_TSTR("testdata/ort_github_issue_4031.onnx.ort");
