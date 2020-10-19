@@ -1024,7 +1024,8 @@ Status TransposeOpBuilder::AddToModelBuilderImpl(ModelBuilder& model_builder, co
 class ReshapeOpBuilder : public BaseOpBuilder {
  public:
   void AddInitializersToSkip(ModelBuilder& model_builder, const Node& node) override;
-  static Status AddReshapeOperator(ModelBuilder& model_builder, const Node& node, const std::string& input, const std::vector<int32_t>& shape) ORT_MUST_USE_RESULT;
+  static Status AddReshapeOperator(ModelBuilder& model_builder, const Node& node,
+                                   const std::string& input, const std::vector<int32_t>& shape) ORT_MUST_USE_RESULT;
 
  private:
   bool IsOpSupportedImpl(ModelBuilder& model_builder, const Node& node) override;
@@ -1036,7 +1037,8 @@ void ReshapeOpBuilder::AddInitializersToSkip(ModelBuilder& model_builder, const 
   model_builder.AddInitializerToSkip(node.InputDefs()[1]->Name());
 }
 
-// We can skip the Reshape if only node(s) in this graph using the output is Matmul or Gemm
+// We can skip the Reshape if only node(s) in this graph using the output is Matmul or Gemm,
+// which will automatically flatten the shape
 /* static */ bool ReshapeOpBuilder::CanSkipReshape(const Node& node) {
   for (auto it = node.OutputEdgesBegin(), end = node.OutputEdgesEnd(); it != end; ++it) {
     const auto& op_type = it->GetNode().OpType();
