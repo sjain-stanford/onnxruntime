@@ -3518,6 +3518,7 @@ Status Graph::LoadFromOrtFormat(
   // which will allow optimizers to run or non-ORT EPs to take nodes.
   // TODO: We could decide that an ORT model is load only even in a full build,
   // and in InferenceSession::Initialize skip partitioning and running optimizers.
+  graph->SetGraphResolveNeeded();
   ORT_RETURN_IF_ERROR(graph->Resolve());
 #else
   // probably nothing required here. validate with model that has nested subgraphs.
