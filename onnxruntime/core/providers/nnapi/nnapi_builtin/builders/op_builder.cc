@@ -2957,18 +2957,12 @@ class FlattenOpBuilder : public BaseOpBuilder {
 };
 
 /* static */ void FlattenOpBuilder::GetFlattenShape(const Node& node, const Shape& input_shape, int32_t& dim_1, int32_t& dim_2) {
-  dim_1 = 1;
-  dim_2 = 1;
-
   int32_t rank = SafeInt<int>(input_shape.size());
   NodeAttrHelper helper(node);
   int32_t axis = SafeInt<int32_t>(HandleNegativeAxis(helper.Get("axis", 1), rank));
 
-  for (int i = 0; i < axis; i++)
-    dim_1 *= input_shape[i];
-
-  for (int i = axis; i < rank; i++)
-    dim_2 *= input_shape[i];
+  dim_1 = std::accumulate(input_shape.cbegin(), input_shape.cbegin() + axis, 1, std::multiplies<int32_t>());
+  dim_2 = std::accumulate(input_shape.cbegin() + axis, input_shape.cend(), 1, std::multiplies<int32_t>());
 }
 
 bool FlattenOpBuilder::IsOpSupportedImpl(ModelBuilder& /* model_builder */, const Node& node) {
@@ -2999,11 +2993,7 @@ Status FlattenOpBuilder::AddToModelBuilderImpl(ModelBuilder& model_builder, cons
   auto input = node.InputDefs()[0]->Name();
   if (model_builder.IsOperandNHWC(input)) {
     // We want to transpose nhwc operand back to nchw before reshape
-    const auto& nhwc_input = node.InputDefs()[0]->Name();
-    if (!model_builder.GetNCHWOperand(nhwc_input, input)) {
-      input = model_builder.GetUniqueName(nhwc_input + "_nhwc_to_nchw");
-      ORT_RETURN_IF_ERROR(TransposeNHWCToNCHW(model_builder, nhwc_input, input));
-    }
+    ORT_RETURN_IF_ERROR(GetNCHWInput(model_builder, node, 0, input));
   }
 
   // Flatten is basically a reshape to 2d tensor
