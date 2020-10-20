@@ -2961,7 +2961,11 @@ class FlattenOpBuilder : public BaseOpBuilder {
 /* static */ void FlattenOpBuilder::GetFlattenShape(const Node& node, const Shape& input_shape, int32_t& dim_1, int32_t& dim_2) {
   int32_t rank = SafeInt<int>(input_shape.size());
   NodeAttrHelper helper(node);
-  int32_t axis = SafeInt<int32_t>(HandleNegativeAxis(helper.Get("axis", 1), rank));
+  int32_t axis = helper.Get("axis", 1);
+  // axis == rank is a valid input, but invalid for HandleNegativeAxis
+  // Skip non-negative axis here
+  if (axis < 0)
+    axis = SafeInt<int32_t>(HandleNegativeAxis(axis, rank));
 
   dim_1 = std::accumulate(input_shape.cbegin(), input_shape.cbegin() + axis, 1, std::multiplies<int32_t>());
   dim_2 = std::accumulate(input_shape.cbegin() + axis, input_shape.cend(), 1, std::multiplies<int32_t>());
