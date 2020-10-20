@@ -524,8 +524,8 @@ static Status GetBinaryOpQuantizationScaleAndZeroPoint(
   return Status::OK();
 }
 
-// NNAPI has the qunatization scale and zero point embedded in the ANeuralNetworksOperandType
-// ONNX has the qunatization scale and zero point as the inputs of the qlinear operators
+// NNAPI has the quantization scale and zero point embedded in the ANeuralNetworksOperandType
+// ONNX has the quantization scale and zero point as the inputs of the qlinear operators
 // We want to verify the scale and zeropoint of the ONNX inputs matches the values embedded in the NNAPI inputs
 static Status IsValidInputQuantizedType(const ModelBuilder& model_builder,
                                         const std::string& input_name,
@@ -886,10 +886,10 @@ Status BinaryOpBuilder::AddToModelBuilderImpl(ModelBuilder& model_builder, const
   if (input1_is_nhwc == input2_is_nhwc) {
     output_is_nhwc = input1_is_nhwc;
   } else if (input1_is_nhwc) {
-    // need transpsoe input1 back to nchw
+    // need transpose input1 back to nchw
     ORT_RETURN_IF_ERROR(GetNCHWInput(model_builder, node, a_idx, input1));
   } else {  // input2_is_nhwc
-    // need transpsoe input2 back to nchw
+    // need transpose input2 back to nchw
     ORT_RETURN_IF_ERROR(GetNCHWInput(model_builder, node, b_idx, input2));
   }
 
@@ -1318,7 +1318,7 @@ bool PoolOpBuilder::IsOpSupportedImpl(ModelBuilder& /* model_builder */, const N
   const auto input_size = input_shape.size();
   if (input_size != 4) {
     LOGS_DEFAULT(VERBOSE)
-        << op_type << " only supportes rank-4 tensor, input ["
+        << op_type << " only supports rank-4 tensor, input ["
         << node.InputDefs()[0]->Name() << "] has actual dim count " << input_size;
     return false;
   }
@@ -1530,7 +1530,7 @@ bool ConvOpBuilder::IsOpSupportedImpl(ModelBuilder& model_builder, const Node& n
 
       const auto android_sdk_ver = model_builder.GetAndroidSdkVer();
       if (android_sdk_ver < 29) {
-        LOGS_DEFAULT(VERBOSE) << op_type << " dilations is only supported on Android API levle 29+, "
+        LOGS_DEFAULT(VERBOSE) << op_type << " dilations is only supported on Android API level 29+, "
                               << "actual API level: " << android_sdk_ver;
         return false;
       }
@@ -2983,7 +2983,7 @@ bool FlattenOpBuilder::IsOpSupportedImpl(ModelBuilder& /* model_builder */, cons
   GetFlattenShape(node, input_shape, dim_1, dim_2);
 
   if (dim_1 == 0 && dim_2 == 0) {
-    LOGS_DEFAULT(VERBOSE) << "The dynamice input shape " << Shape2String(input_shape)
+    LOGS_DEFAULT(VERBOSE) << "The dynamical input shape " << Shape2String(input_shape)
                           << " is not supported";
     return false;
   }
