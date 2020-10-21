@@ -15,7 +15,7 @@ RUN apt-get update &&\
     apt-get install -y sudo git bash
 
 WORKDIR /code
-ENV PATH /opt/miniconda/bin:/code/cmake-3.14.3-Linux-x86_64/bin:${PATH}
+ENV PATH /code/cmake-3.14.3-Linux-x86_64/bin:${PATH}
 
 # Prepare onnxruntime repository & build onnxruntime
 RUN git clone --single-branch --branch ${ONNXRUNTIME_SERVER_BRANCH} --recursive ${ONNXRUNTIME_REPO} onnxruntime &&\
